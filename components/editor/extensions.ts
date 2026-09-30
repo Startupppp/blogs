@@ -16,6 +16,16 @@ declare module "@tiptap/core" {
 }
 
 /**
+ * The editor's document as plain JSON. ProseMirror builds node attrs with a null prototype, and
+ * React passes non-plain objects to a Server Action as opaque temporary references, so without
+ * this every heading, image, callout and table reached the server as a function and the save
+ * was refused.
+ */
+export function editorDocument(editor: { getJSON(): unknown }): unknown {
+  return structuredClone(editor.getJSON());
+}
+
+/**
  * A figure that references library media by id. `src` is an editor-only preview URL: the server
  * strips it and renders the published image from the media record, never from the client.
  * Old-editor <img> tags carry no media id and are therefore not imported (see

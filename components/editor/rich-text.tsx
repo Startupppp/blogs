@@ -3,7 +3,7 @@
 import { EditorContent, useEditor, useEditorState, type Editor as TiptapEditor } from "@tiptap/react";
 import { useState } from "react";
 import { isSafeHref } from "@/lib/content/document";
-import { articleExtensions } from "./extensions";
+import { articleExtensions, editorDocument } from "./extensions";
 
 interface Props {
   initialDoc: unknown;
@@ -125,8 +125,8 @@ export function RichText({ initialDoc, legacyHtml, onChange, onRequestImage, err
     content: legacyHtml ?? (initialDoc as object),
     immediatelyRender: false,
     editorProps: { attributes: { class: "article mx-auto px-6 py-8", "aria-label": "Article body", "aria-multiline": "true", role: "textbox" } },
-    onUpdate: ({ editor: e }) => onChange(e.getJSON()),
-    onCreate: ({ editor: e }) => { if (legacyHtml) onChange(e.getJSON()); },
+    onUpdate: ({ editor: e }) => onChange(editorDocument(e)),
+    onCreate: ({ editor: e }) => { if (legacyHtml) onChange(editorDocument(e)); },
   });
   if (!editor) return <div className="min-h-96 rounded-lg border border-rule bg-surface" aria-busy="true" />;
   return (
