@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* Editorial palette shared with the public StreamlineOS Journal. */
+@theme {
+  --color-paper: #f8f7f2;
+  --color-surface: #ffffff;
+  --color-sage: #eef0e8;
+  --color-ink: #263c32;
+  --color-muted: #59635b;
+  --color-rule: #daddd4;
+  --color-accent: #a97450;
+  --color-danger: #9b2c2c;
+  --color-danger-soft: #fbeaea;
+  --color-warn: #7a5410;
+  --color-warn-soft: #fbf3df;
+  --color-ok: #25603f;
+  --color-ok-soft: #e6f2ea;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Article rendering: the same rules the public article uses, for editor and preview fidelity. */
+.article {
+  font-family: var(--font-serif);
+  font-size: 1.1875rem;
+  line-height: 1.75;
+  max-width: 70ch;
+  color: var(--color-ink);
+}
+.article > * + * { margin-top: 1.25em; }
+.article h2, .article h3, .article h4 { font-family: var(--font-serif); line-height: 1.25; margin-top: 2em; scroll-margin-top: 6rem; }
+.article h2 { font-size: 1.75rem; }
+.article h3 { font-size: 1.375rem; }
+.article h4 { font-size: 1.125rem; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.06em; }
+.article a { text-decoration: underline; text-underline-offset: 3px; color: var(--color-ink); }
+.article ul { list-style: disc; padding-left: 1.4em; }
+.article ol { list-style: decimal; padding-left: 1.4em; }
+.article li + li { margin-top: 0.4em; }
+.article blockquote { border-left: 3px solid var(--color-accent); padding-left: 1.1em; font-style: italic; color: var(--color-muted); }
+.article pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.875rem; line-height: 1.6; background: var(--color-sage); padding: 1em; border-radius: 6px; overflow-x: auto; white-space: pre; }
+.article :not(pre) > code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; background: var(--color-sage); padding: 0.1em 0.3em; border-radius: 3px; }
+.article hr { border: 0; border-top: 1px solid var(--color-rule); margin: 2.5em 0; }
+.article figure img { width: 100%; height: auto; border-radius: 4px; }
+.article figcaption { font-family: var(--font-sans); font-size: 0.875rem; color: var(--color-muted); margin-top: 0.5em; }
+.article .table-scroll { overflow-x: auto; }
+.article table { border-collapse: collapse; width: 100%; font-family: var(--font-sans); font-size: 0.9375rem; }
+.article th, .article td { border: 1px solid var(--color-rule); padding: 0.5em 0.75em; text-align: left; vertical-align: top; }
+.article th { background: var(--color-sage); }
+.article .callout, .article aside[data-tone] { background: var(--color-sage); border-radius: 6px; padding: 1em 1.25em; font-family: var(--font-sans); font-size: 1rem; }
+.article aside[data-tone="warning"] { background: var(--color-warn-soft); }
+.article aside[data-tone="tip"] { background: var(--color-ok-soft); }
+
+/* Tiptap editing surface */
+.ProseMirror { outline: none; min-height: 24rem; }
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.ProseMirror .selectedCell { background: var(--color-warn-soft); }
+.ProseMirror figure.ProseMirror-selectednode { outline: 3px solid var(--color-accent); }

@@ -71,7 +71,7 @@ export async function finalizeUpload(database: Db, editor: Editor, mediaId: stri
   assertCan(editor, "media:upload");
   const [media] = await database.select().from(blogMedia).where(eq(blogMedia.id, mediaId));
   if (!media || (media.createdBy !== editor.id && editor.role === "writer")) throw notFound("Upload");
-  if (media.status !== "pending") return { mediaId, status: media.status };
+  if (media.status !== "pending") return { mediaId, status: media.status, processKey: null };
 
   const bucket = env().R2_PRIVATE_BUCKET;
   const head = await headObject(bucket, media.privateKey);
@@ -118,7 +118,7 @@ export async function finalizeUpload(database: Db, editor: Editor, mediaId: stri
     await enqueue(tx, "media.process", { mediaId, checksum }, { dedupeKey: `process:${mediaId}:${checksum}`, maxAttempts: 5 });
     await audit(tx, { actorId: editor.id, action: "media.upload", mediaId, summary: `${mime} ${info.width}x${info.height}` });
   });
-  return { mediaId, status: "processing" as const };
+  return { mediaId, status: "processing" as const, processKey: `process:${mediaId}:${checksum}` };
 }
 
 /**
