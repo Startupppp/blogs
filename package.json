@@ -14,7 +14,6 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:db": "vitest run --config vitest.db.config.ts",
-    "test:e2e": "playwright test",
     "check:schema-vendor": "node scripts/check-schema-vendor.mjs",
     "dev:object-store": "node scripts/dev-object-store.mts"
   },
@@ -39,7 +38,6 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.20.4",
     "@types/react": "^19.3.0",
