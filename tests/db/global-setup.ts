@@ -104,6 +104,7 @@ export default async function setup(project: TestProject) {
     DATABASE_URL: app.toString(),
     DATABASE_SSL: "disable",
     ADMIN_ORIGIN: "http://admin.test",
+    AUTH_URL: "http://admin.test",
     PUBLIC_SITE_ORIGIN: siteUrl,
     BLOG_INVALIDATION_URL: `${siteUrl}/blog/internal/invalidate`,
     BLOG_INVALIDATION_SECRET: SECRET,
