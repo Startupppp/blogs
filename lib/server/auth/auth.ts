@@ -1,0 +1,38 @@
+import "server-only";
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import { env } from "../env";
+import { bindEditorOnSignIn } from "./editor";
+
+/**
+ * Sign-in is Google OIDC through this admin's own client registration and callback
+ * (`/api/auth/callback/google`), with a host-only session cookie. Nobody can sign up: the sign-in
+ * callback admits only a verified Google account whose email has an enabled `blog_editors` row,
+ * and binds that row to the Google subject on first use.
+ */
+export const { handlers, auth, signIn, signOut } = NextAuth(() => {
+  const e = env();
+  return {
+    secret: e.AUTH_SECRET,
+    trustHost: false,
+    providers: [Google({ clientId: e.AUTH_GOOGLE_ID, clientSecret: e.AUTH_GOOGLE_SECRET })],
+    session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
+    pages: { signIn: "/login", error: "/login" },
+    callbacks: {
+      async signIn({ account, profile }) {
+        if (account?.provider !== "google" || !profile?.email || profile.email_verified !== true || !profile.sub) return false;
+        return (await bindEditorOnSignIn(profile.email, profile.sub, profile.name ?? null)) !== null;
+      },
+      async jwt({ token, account, profile }) {
+        if (account && profile?.sub) {
+          token.subject = profile.sub;
+          token.email = profile.email?.toLowerCase();
+        }
+        return token;
+      },
+      async session({ session, token }) {
+        return { ...session, subject: typeof token.subject === "string" ? token.subject : null };
+      },
+    },
+  };
+});
