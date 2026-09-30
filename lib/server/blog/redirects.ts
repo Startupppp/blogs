@@ -32,7 +32,7 @@ export async function saveRedirect(database: Db, editor: Editor, input: z.infer<
   const slug = input.sourcePath.split("/")[2] ?? "";
   if (SLUG_PATTERN.test(slug) && input.sourcePath === `/blogs/${slug}`) {
     const [live] = await database.select({ id: blogPosts.id }).from(blogPosts).where(eq(blogPosts.slug, slug)).limit(1);
-    if (live) throw new ServiceError(409, "is_article", "A post uses this URL. Change the post's URL instead.", { sourcePath: "A post uses this URL." });
+    if (live) throw new ServiceError(409, "is_article", "A post uses this URL. Change the post’s URL instead.", { sourcePath: "A post uses this URL." });
   }
   let target = input.statusCode === 301 ? input.targetPath : null;
   for (let hops = 0; target && hops < 10; hops++) {

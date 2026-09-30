@@ -31,7 +31,7 @@ export default async function CategoriesPage() {
     <div className="max-w-4xl space-y-8">
       <div>
         <h1 className="font-serif text-3xl">Categories</h1>
-        <p className="mt-1 text-sm text-muted">Topic hubs. A category's URL is fixed once created, so renaming never breaks links.</p>
+        <p className="mt-1 text-sm text-muted">Topic hubs. A category’s URL is fixed once created, so renaming never breaks links.</p>
       </div>
       <details className="rounded-lg border border-rule bg-surface p-4">
         <summary className="cursor-pointer font-medium">Add a category</summary>

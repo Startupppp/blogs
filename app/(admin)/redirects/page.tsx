@@ -13,7 +13,7 @@ export default async function RedirectsPage() {
     <div className="max-w-5xl space-y-8">
       <div>
         <h1 className="font-serif text-3xl">Redirects</h1>
-        <p className="mt-1 text-sm text-muted">Changing a post's URL adds a redirect automatically. Add one here for other old /blogs addresses, or retire one with 410 Gone.</p>
+        <p className="mt-1 text-sm text-muted">Changing a post’s URL adds a redirect automatically. Add one here for other old /blogs addresses, or retire one with 410 Gone.</p>
       </div>
       <ActionForm action={saveRedirectAction} submitLabel="Save redirect" className="space-y-4 rounded-lg border border-rule bg-surface p-4">
         <div className="grid gap-4 sm:grid-cols-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { EditorState, MediaSummary } from "@/lib/server/blog/queries";
 import { CTA_KEYS, CTA_LABELS } from "@/lib/content/cta";
 import { slugify } from "@/lib/content/slug";
@@ -32,6 +32,21 @@ export interface Fields {
 
 const AUTOSAVE_IDLE_MS = 1500;
 const backupKey = (postId: string) => `blog-admin:draft:${postId}`;
+const noSubscribe = () => () => {};
+/** What this browser held for a post when the page opened; later autosave backups are not "recovered". */
+const backupsAtOpen = new Map<string, string | null>();
+function backupAtOpen(key: string): string | null {
+  if (!backupsAtOpen.has(key)) {
+    let value: string | null = null;
+    try {
+      value = localStorage.getItem(key);
+    } catch {
+      /* storage unavailable */
+    }
+    backupsAtOpen.set(key, value);
+  }
+  return backupsAtOpen.get(key) ?? null;
+}
 
 function fieldsFrom(rev: EditorState["revision"]): Fields {
   return {
@@ -71,39 +86,48 @@ export function PostEditor({ initial }: { initial: EditorState }) {
   const [conflict, setConflict] = useState<ConflictDetail | null>(null);
   const [media, setMedia] = useState<Record<string, MediaSummary>>(initial.media);
   const [picker, setPicker] = useState<null | { title: string; onPick: (m: MediaSummary) => void }>(null);
-  const [backup, setBackup] = useState<{ fields: Fields; doc: unknown; at: string } | null>(null);
+  const [backupDismissed, setBackupDismissed] = useState(false);
   const [editorKey, setEditorKey] = useState(0);
   const saving = useRef(false);
   const pending = useRef(false);
   const latest = useRef({ fields, doc, version });
-  latest.current = { fields, doc, version };
+  useEffect(() => {
+    latest.current = { fields, doc, version };
+  }, [fields, doc, version]);
 
   const legacyImages = useMemo(() => (initial.revision.legacyHtml?.match(/<img\b/gi) ?? []).length, [initial.revision.legacyHtml]);
 
   // A draft kept in this browser from a save that never reached the server.
-  useEffect(() => {
+  const storedBackup = useSyncExternalStore(noSubscribe, () => backupAtOpen(backupKey(postId)), () => null);
+  const backup = useMemo(() => {
+    if (!storedBackup || backupDismissed) return null;
     try {
-      const raw = localStorage.getItem(backupKey(postId));
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { fields: Fields; doc: unknown; at: string };
-      if (new Date(parsed.at) > new Date(initial.revision.updatedAt)) setBackup(parsed);
-      else localStorage.removeItem(backupKey(postId));
+      const parsed = JSON.parse(storedBackup) as { fields: Fields; doc: unknown; at: string };
+      return new Date(parsed.at) > new Date(initial.revision.updatedAt) ? parsed : null;
     } catch {
-      /* storage unavailable: nothing to recover */
+      return null;
     }
-  }, [postId, initial.revision.updatedAt]);
+  }, [storedBackup, backupDismissed, initial.revision.updatedAt]);
 
   const markDirty = useCallback(() => {
     setSaveState((s) => (s === "conflict" ? s : "dirty"));
+  }, []);
+
+  useEffect(() => {
+    if (saveState !== "dirty" && saveState !== "error") return;
     try {
-      localStorage.setItem(backupKey(postId), JSON.stringify({ fields: latest.current.fields, doc: latest.current.doc, at: new Date().toISOString() }));
+      localStorage.setItem(backupKey(postId), JSON.stringify({ fields, doc, at: new Date().toISOString() }));
     } catch {
       /* storage unavailable: the server save is the only copy */
     }
-  }, [postId]);
+  }, [fields, doc, saveState, postId]);
 
   const update = <K extends keyof Fields>(key: K, value: Fields[K]) => {
-    setFields((f) => ({ ...f, [key]: value }));
+    setFields((f) => {
+      const next = { ...f, [key]: value };
+      latest.current = { ...latest.current, fields: next };
+      return next;
+    });
     setFieldErrors((e) => {
       const { [key]: _gone, ...rest } = e;
       return rest;
@@ -187,8 +211,8 @@ export function PostEditor({ initial }: { initial: EditorState }) {
         {backup ? (
           <div role="status" className="flex flex-wrap items-center gap-3 rounded-md bg-warn-soft px-4 py-3 text-sm text-warn">
             <span>This browser has unsaved changes from {new Date(backup.at).toLocaleString()}.</span>
-            <button type="button" className="underline" onClick={() => { setFields(backup.fields); setDoc(backup.doc); latest.current = { ...latest.current, fields: backup.fields, doc: backup.doc }; setBackup(null); setEditorKey((k) => k + 1); markDirty(); }}>Restore them</button>
-            <button type="button" className="underline" onClick={() => { try { localStorage.removeItem(backupKey(postId)); } catch { /* ignore */ } setBackup(null); }}>Discard</button>
+            <button type="button" className="underline" onClick={() => { setFields(backup.fields); setDoc(backup.doc); latest.current = { ...latest.current, fields: backup.fields, doc: backup.doc }; setBackupDismissed(true); setEditorKey((k) => k + 1); markDirty(); }}>Restore them</button>
+            <button type="button" className="underline" onClick={() => { try { localStorage.removeItem(backupKey(postId)); } catch { /* ignore */ } setBackupDismissed(true); }}>Discard</button>
           </div>
         ) : null}
 
