@@ -18,9 +18,16 @@ async function readBody(req: IncomingMessage): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
-export async function startFakeS3(): Promise<FakeS3> {
+export async function startFakeS3(listenPort = 0): Promise<FakeS3> {
   const objects: FakeS3["objects"] = new Map();
   const server: Server = createServer(async (req, res) => {
+    // Browsers PUT to presigned URLs cross-origin; R2 answers with the bucket's CORS policy.
+    res.setHeader("access-control-allow-origin", "*");
+    res.setHeader("access-control-expose-headers", "etag");
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, { "access-control-allow-methods": "GET, HEAD, PUT", "access-control-allow-headers": "*", "access-control-max-age": "600" }).end();
+      return;
+    }
     const url = new URL(req.url ?? "/", "http://fake");
     const path = decodeURIComponent(url.pathname.slice(1));
     const body = await readBody(req);
@@ -55,7 +62,7 @@ export async function startFakeS3(): Promise<FakeS3> {
     }
     res.writeHead(405).end();
   });
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  await new Promise<void>((resolve) => server.listen(listenPort, "127.0.0.1", resolve));
   const address = server.address();
   const port = typeof address === "object" && address ? address.port : 0;
   return { url: `http://127.0.0.1:${port}`, objects, close: () => new Promise((resolve) => server.close(() => resolve())) };
