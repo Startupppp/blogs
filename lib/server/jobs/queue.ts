@@ -72,10 +72,11 @@ export async function failJob(database: Db, job: ClaimedJob, error: unknown): Pr
     WHERE id = ${job.id}`);
 }
 
-/** Operator retry for a dead job: same payload, same id, attempts reset. */
-export async function retryDeadJob(database: Db, id: string): Promise<boolean> {
+/** Operator retry for a dead job: same payload, same id, attempts reset. Scoped to one post when given. */
+export async function retryDeadJob(database: Db, id: string, postId?: string): Promise<boolean> {
+  const scope = postId ? sql`AND payload->>'postId' = ${postId}` : sql``;
   const rows = await database.execute(sql`
     UPDATE blog_jobs SET status = 'pending', attempts = 0, run_after = now(), last_error = NULL, updated_at = now()
-    WHERE id = ${id} AND status = 'dead' RETURNING id`);
+    WHERE id = ${id} AND status = 'dead' ${scope} RETURNING id`);
   return rows.length > 0;
 }

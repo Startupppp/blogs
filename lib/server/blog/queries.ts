@@ -5,6 +5,7 @@ import { assertCan, assertCanEditPost, policy, type Editor } from "../auth/edito
 import { can } from "../auth/roles";
 import type { Db } from "../db/client";
 import { blogAuditEvents, blogAuthors, blogCategories, blogEditors, blogMedia, blogPostRevisions, blogPosts } from "../db/schema";
+import { env } from "../env";
 import { notFound, ServiceError } from "../errors";
 import { publicationState } from "../jobs/runner";
 import { previewUrlFor, renderedMedia } from "../media/urls";
@@ -106,6 +107,7 @@ export async function loadEditorState(database: Db, editor: Editor, postId: stri
     owners,
     events: events.map((e) => ({ ...e, createdAt: e.createdAt.toISOString() })),
     publication: state,
+    publicOrigin: env().PUBLIC_SITE_ORIGIN,
     can: {
       publish: can(editor.role, "post:publish", policy()),
       reassign: can(editor.role, "post:reassign", policy()),
