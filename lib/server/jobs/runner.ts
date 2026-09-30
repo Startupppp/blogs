@@ -26,9 +26,6 @@ async function handle(database: Db, job: ClaimedJob): Promise<void> {
     case "site.notify":
       await deliverNotify(database, job.payload);
       return;
-    case "media.cleanup":
-      await sweepMedia(database);
-      return;
   }
 }
 

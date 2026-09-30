@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import type { Db, Tx } from "../db/client";
 import { blogJobs } from "../db/schema";
 
-export type JobKind = "media.process" | "post.publish_scheduled" | "site.notify" | "media.cleanup";
+export type JobKind = "media.process" | "post.publish_scheduled" | "site.notify";
 
 export type ClaimedJob = {
   id: string;
