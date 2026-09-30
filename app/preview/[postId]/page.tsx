@@ -58,7 +58,7 @@ export default async function PreviewPage({ params, searchParams }: { params: Pr
   return (
     <div className="min-h-dvh bg-paper">
       <div role="status" className="sticky top-0 z-20 bg-accent px-4 py-2 text-center text-sm font-medium text-white">
-        Preview — revision #{rev.seq}{post.publishedRevisionId === rev.id ? " (live version)" : ", not published"}. Only signed-in editors can see this page.
+        Preview — revision #{rev.seq}{post.status === "published" && post.publishedRevisionId === rev.id ? " (live version)" : ", not published"}. Only signed-in editors can see this page.
       </div>
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
         <nav aria-label="Breadcrumb" className="text-sm text-muted">Journal{category ? ` / ${category.name}` : ""}</nav>
