@@ -14,7 +14,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   const e = env();
   return {
     secret: e.AUTH_SECRET,
-    trustHost: false,
+    // Auth.js refuses every request unless trustHost is true (an explicit false is not defaulted).
+    // It is safe because env() requires AUTH_URL: next-auth rebuilds each request URL from it,
+    // so the Host header never decides a callback or redirect origin.
+    trustHost: true,
     providers: [Google({ clientId: e.AUTH_GOOGLE_ID, clientSecret: e.AUTH_GOOGLE_SECRET })],
     session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
     pages: { signIn: "/login", error: "/login" },

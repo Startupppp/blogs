@@ -18,6 +18,8 @@ const schema = z.object({
   DATABASE_URL: url,
   DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(20).default(5),
   DATABASE_SSL: z.enum(["require", "disable"]).default("require"),
+  /** Auth.js base URL; must equal ADMIN_ORIGIN. Request URLs are rebuilt from it (see auth.ts). */
+  AUTH_URL: origin,
   AUTH_SECRET: secret,
   AUTH_GOOGLE_ID: z.string().min(1),
   AUTH_GOOGLE_SECRET: z.string().min(1),
@@ -49,6 +51,9 @@ export function env(): Env {
   }
   if (parsed.data.R2_PRIVATE_BUCKET === parsed.data.R2_PUBLIC_BUCKET) {
     throw new Error("R2_PRIVATE_BUCKET and R2_PUBLIC_BUCKET must be different buckets");
+  }
+  if (parsed.data.AUTH_URL !== parsed.data.ADMIN_ORIGIN) {
+    throw new Error("AUTH_URL must equal ADMIN_ORIGIN");
   }
   cached = parsed.data;
   return cached;
