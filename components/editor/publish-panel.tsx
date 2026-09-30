@@ -10,6 +10,7 @@ import {
   cancelScheduleAction, checkpointAction, deletePostAction, publicationStateAction, publishAction, publishCheckAction,
   reassignAction, restoreArchivedAction, retryNotifyAction, scheduleAction, unpublishAction,
 } from "@/app/(admin)/posts/[postId]/actions";
+import { LocalTime } from "@/components/ui/local-time";
 import { StatusBadge } from "@/components/ui/status-badge";
 
 interface Props {
@@ -214,7 +215,7 @@ export function PublishPanel({ initial, version, setVersion, dirty, flush, onFie
           <summary className="cursor-pointer font-medium">Activity</summary>
           <ol className="mt-2 space-y-1.5 text-muted">
             {initial.events.map((e) => (
-              <li key={e.id}><span className="text-ink">{e.action.replace(/^post\./, "").replaceAll("_", " ")}</span>{e.summary ? ` — ${e.summary}` : ""} · {e.actor ?? "system"} · {new Date(e.createdAt).toLocaleString()}</li>
+              <li key={e.id}><span className="text-ink">{e.action.replace(/^post\./, "").replaceAll("_", " ")}</span>{e.summary ? ` — ${e.summary}` : ""} · {e.actor ?? "system"} · <LocalTime iso={e.createdAt} /></li>
             ))}
           </ol>
         </details>

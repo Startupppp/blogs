@@ -201,7 +201,8 @@ export function PostEditor({ initial }: { initial: EditorState }) {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="min-w-0 space-y-6">
         <div aria-live="polite" className="flex flex-wrap items-center gap-3 text-sm">
-          <span className={saveState === "error" || saveState === "conflict" ? "text-danger" : "text-muted"}>
+          {/* The saved time is formatted in the viewer's locale, which the server cannot know. */}
+          <span suppressHydrationWarning className={saveState === "error" || saveState === "conflict" ? "text-danger" : "text-muted"}>
             {saveState === "saving" ? "Saving…" : saveState === "dirty" ? "Unsaved changes" : saveState === "conflict" ? "Not saved — someone else changed this post" : saveState === "error" ? "Not saved" : `Saved ${new Date(savedAt).toLocaleTimeString()}`}
           </span>
           {saveState === "error" ? <button type="button" onClick={() => void save()} className="underline">Retry now</button> : null}
