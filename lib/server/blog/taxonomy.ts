@@ -56,7 +56,9 @@ export async function listAuthors(database: Db) {
       id: blogAuthors.id, name: blogAuthors.name, slug: blogAuthors.slug, role: blogAuthors.role, bio: blogAuthors.bio,
       twitter: blogAuthors.twitter, linkedin: blogAuthors.linkedin, email: blogAuthors.email, avatar: blogAuthors.avatar,
       archivedAt: blogAuthors.archivedAt,
-      livePosts: sql<number>`(SELECT count(*)::int FROM blog_posts p WHERE p.author_id = ${blogAuthors.id} AND p.status = 'published' AND p.deleted_at IS NULL)`,
+      // The outer column is written out: Drizzle interpolates a column reference unqualified, and
+      // a bare "id" inside this subquery would bind to blog_posts.id, counting nothing.
+      livePosts: sql<number>`(SELECT count(*)::int FROM blog_posts p WHERE p.author_id = "blog_authors"."id" AND p.status = 'published' AND p.deleted_at IS NULL)`,
     })
     .from(blogAuthors).orderBy(asc(blogAuthors.name)).limit(500);
 }
@@ -109,7 +111,7 @@ export async function listCategories(database: Db) {
     .select({
       id: blogCategories.id, name: blogCategories.name, slug: blogCategories.slug, description: blogCategories.description,
       color: blogCategories.color, seoTitle: blogCategories.seoTitle, seoDescription: blogCategories.seoDescription, archivedAt: blogCategories.archivedAt,
-      livePosts: sql<number>`(SELECT count(*)::int FROM blog_posts p WHERE p.category_id = ${blogCategories.id} AND p.status = 'published' AND p.deleted_at IS NULL)`,
+      livePosts: sql<number>`(SELECT count(*)::int FROM blog_posts p WHERE p.category_id = "blog_categories"."id" AND p.status = 'published' AND p.deleted_at IS NULL)`,
     })
     .from(blogCategories).orderBy(asc(blogCategories.name)).limit(200);
 }
