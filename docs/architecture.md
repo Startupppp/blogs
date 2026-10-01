@@ -32,7 +32,11 @@ The admin never runs migrations. It declares the shared-schema versions it can w
 (`lib/server/db/compat.ts`, `SUPPORTED_SCHEMA_VERSIONS = [2]`) and checks `blog_schema_meta.version`
 before every write and in `/api/health`; any other version answers 503 and writes nothing.
 `db/test-schema/` holds byte-identical copies of the backend migrations its database tests need;
-`pnpm check:schema-vendor` fails if they drift.
+`pnpm check:schema-vendor` fails if they drift. It also compares the backend's Drizzle blog schema
+column by column against that vendored SQL, so a backend column added or renamed outside a vendored
+migration cannot leave the database tests green against a schema that does not exist —
+`0000_blog_legacy.sql` is assembled by hand from several backend migrations and has no single
+upstream file to diff.
 
 ## Data model (after migration 1705)
 
