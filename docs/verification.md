@@ -15,7 +15,7 @@ Cloudflare R2 or a real Google OAuth client**; those checks are listed at the en
 | `pnpm test` | 4 files, 22 tests passed |
 | `pnpm test:db` | 2 files, 18 tests passed (builds `blog_admin_test` from `db/test-schema/`, runs as the scoped `blog_admin_app` role) |
 | `next build --webpack` (production) | exit 0; 20 routes, all dynamic except `/_not-found` and `/robots.txt` |
-| `BACKEND_DIR=../streamlineos-backend-worktree pnpm check:schema-vendor` | `ok 1703_blog_revisions_publication.sql` |
+| `BACKEND_DIR=../streamlineos-backend-worktree pnpm check:schema-vendor` | `ok 1705_blog_revisions_publication.sql` |
 | `next start` headers on `/preview/…`, `/posts` | `Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate`, `X-Robots-Tag: noindex, nofollow, noarchive`, CSP, HSTS |
 
 ### `streamlineos-backend`, branch `feat/blog-shared-publication`
@@ -31,9 +31,9 @@ Cloudflare R2 or a real Google OAuth client**; those checks are listed at the en
 | `check:openapi-coverage` | fails on 2 operations outside the blog module (`/hr/leave-policies/templates/dismiss`, `/kb/import-jobs/{id}/retry`), as on the base branch |
 | `check:route-classification` | ALL ROUTES CLASSIFIED |
 | `check:rate-limit-guards` | 1 new redundant mount in `modules/public/public.controller.ts` (not blog); 0 stale entries after pruning the 4 removed blog handlers |
-| `check:migration-discipline` / `check:migration-rollback` | fail on migrations other than 1703 (13 missing rollbacks, none 1703) |
-| 1703 on a scratch database | apply, re-apply (no-op), rollback, re-apply all succeed |
-| 1703 on synthetic legacy rows (published / draft / archived, duplicate author names) | legacy columns byte-identical before and after (row md5 unchanged); every post has a working revision; only the published post is public; author slugs `ravi-kumar`, `ravi-kumar-2`; re-run adds no revisions |
+| `check:migration-discipline` / `check:migration-rollback` | fail on migrations other than 1705 (13 missing rollbacks, none 1705) |
+| 1705 on a scratch database | apply, re-apply (no-op), rollback, re-apply all succeed |
+| 1705 on synthetic legacy rows (published / draft / archived, duplicate author names) | legacy columns byte-identical before and after (row md5 unchanged); every post has a working revision; only the published post is public; author slugs `ravi-kumar`, `ravi-kumar-2`; re-run adds no revisions |
 
 ### `streamlineos-frontend`, branch `feat/blog-shared-publication`
 
@@ -49,7 +49,7 @@ Cloudflare R2 or a real Google OAuth client**; those checks are listed at the en
 ## Cross-application run
 
 Three separate processes against one database, `blog_e2e` (a copy of a local database at the
-migration immediately before 1703, then 1703 applied):
+migration immediately before 1705, then 1705 applied):
 
 - backend `dist/main.js` on :1600, as its own non-owner app role;
 - frontend `next dev` on :3200 with `NEXT_PUBLIC_API_URL=http://localhost:1600`;
@@ -156,11 +156,11 @@ stand-ins; **Partial** = implemented with a stated gap; **Not verified** = no ev
 | Section | Implementation | Evidence | Status |
 | --- | --- | --- | --- |
 | §6 Roles | `lib/server/auth/roles.ts`, checked in every action | DB test "a writer cannot edit another writer's draft or publish" | Done |
-| §7 One migration owner, scoped role | Backend 1703; `db/provision-editorial-role.sql`; `compat.ts` | DB test "least privilege"; schema-version refusal | Done |
+| §7 One migration owner, scoped role | Backend 1705; `db/provision-editorial-role.sql`; `compat.ts` | DB test "least privilege"; schema-version refusal | Done |
 | §7 Durable jobs | `blog_jobs` leases, backoff, dead state; `/api/jobs/run` | DB tests; cross-app jobs `done` | Done (Vercel cron not registered) |
 | §8 Lifecycle and predicate | `publish.ts` | DB tests; cross-app run | Done |
 | §8 Slugs and redirects | `slug.ts`, redirects single-hop, 410 tombstones | Unit + DB tests; 308 observed | Done |
-| §8 Legacy backfill | 1703 | Rehearsal above | Done (not run on production data) |
+| §8 Legacy backfill | 1705 | Rehearsal above | Done (not run on production data) |
 | §9 Media pipeline | `lib/server/media/**` | DB media tests (6); cross-app upload | Local (real R2 not verified) |
 | §10 Metadata, JSON-LD, canonical | Frontend `lib/blog/seo.ts`, article JSON-LD | `blog-lib.test.ts`; cross-app HTML checks | Done |
 | §10 Sitemap, RSS | Backend `sitemapPosts` (cursor), `rss.xml`; frontend `app/sitemap.ts`, rewrite | DB spec; cross-app run | Done |
@@ -176,7 +176,7 @@ stand-ins; **Partial** = implemented with a stated gap; **Not verified** = no ev
 - Real Google sign-in and first-login subject binding in a browser.
 - Any deployment (admin, backend, frontend); staging canonical, redirect, sitemap and robots
   behaviour on a real origin; Vercel cron registration.
-- Migration 1703 on the production or staging database.
+- Migration 1705 on the production or staging database.
 - Lighthouse, Core Web Vitals, API p95, accessibility scan, keyboard walkthrough, JavaScript-off
   reading (article text is in the server HTML, but navigation was not tested without JS).
 - The conflict dialog in a browser (the 409 path is covered by a DB test).

@@ -3,9 +3,9 @@
 Existing posts move to the revision model in place. Nothing is copied to another database,
 nothing is deleted, and fixture content is never promoted.
 
-## What migration 1703 does to existing rows
+## What migration 1705 does to existing rows
 
-Migration `1703_blog_revisions_publication` in `streamlineos-backend` (the only migration owner):
+Migration `1705_blog_revisions_publication` in `streamlineos-backend` (the only migration owner):
 
 1. Creates one **frozen** revision (`seq = 1`, `schema_version = 0`) per existing post from the row
    itself: `content_json` (or a `{"type":"legacyHtml"}` marker) as the document, `content` as the
@@ -19,7 +19,7 @@ Migration `1703_blog_revisions_publication` in `streamlineos-backend` (the only 
 IDs, slugs, dates, taxonomy and image URLs are unchanged, and the legacy columns still hold what
 was published, so the public site serves exactly the same articles after the migration as before.
 The migration is re-runnable and has a rollback file
-(`migrations/rollback/1703_blog_revisions_publication.down.sql`) that drops only what 1703 added.
+(`migrations/rollback/1705_blog_revisions_publication.down.sql`) that drops only what 1705 added.
 
 ## Converting a legacy article in the editor
 
@@ -47,7 +47,7 @@ Run the migration against a copy of the target database first:
 
 ```bash
 createdb blog_rehearsal -T <copy-of-target>
-psql -d blog_rehearsal -v ON_ERROR_STOP=1 -f migrations/1703_blog_revisions_publication.sql
+psql -d blog_rehearsal -v ON_ERROR_STOP=1 -f migrations/1705_blog_revisions_publication.sql
 psql -d blog_rehearsal -c "select count(*) filter (where working_revision_id is null) as missing_working,
   count(*) filter (where status = 'published' and published_revision_id is null) as missing_published
   from blog_posts"

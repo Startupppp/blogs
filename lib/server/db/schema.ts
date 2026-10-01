@@ -17,7 +17,7 @@ import {
 
 /**
  * Explicit mapping of the SHARED blog tables. The schema is owned by streamlineos-backend's
- * migrations (1703 and later); this file never drives a migration. `scripts/check-schema-compat.ts`
+ * migrations (1705 and later); this file never drives a migration. `scripts/check-schema-compat.ts`
  * compares every column declared here with the live database, and `blog_schema_meta.version` is
  * checked at runtime (see ./compat.ts).
  *

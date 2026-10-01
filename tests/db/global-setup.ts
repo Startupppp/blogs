@@ -7,7 +7,7 @@ import type { TestProject } from "vitest/node";
 import { startFakeS3 } from "../support/fake-s3";
 
 /**
- * Builds a disposable database from the vendored shared schema (backend 0000 blog tables + 1703),
+ * Builds a disposable database from the vendored shared schema (backend 0000 blog tables + 1705),
  * provisions the real least-privilege role with db/provision-editorial-role.sql, and connects the
  * tests AS THAT ROLE — so a missing grant fails a test instead of passing under the owner.
  *
@@ -42,7 +42,7 @@ export default async function setup(project: TestProject) {
 
   const owner = postgres(OWNER_URL, { max: 2, onnotice: () => {} });
   await owner.unsafe(readFileSync("db/test-schema/0000_blog_legacy.sql", "utf8"));
-  await owner.unsafe(readFileSync("db/test-schema/1703_blog_revisions_publication.sql", "utf8"));
+  await owner.unsafe(readFileSync("db/test-schema/1705_blog_revisions_publication.sql", "utf8"));
   // A stand-in for the platform's private tables: the editorial role must not be able to read it.
   await owner.unsafe(`CREATE TABLE hr_people (id int primary key, salary int); INSERT INTO hr_people VALUES (1, 100);`);
   execFileSync("psql", [OWNER_URL, "-q", "-v", `admin_password=${APP_PASSWORD}`, "-f", "db/provision-editorial-role.sql"], { stdio: "pipe" });

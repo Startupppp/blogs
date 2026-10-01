@@ -16,7 +16,7 @@ How it fits with the other repositories: [docs/architecture.md](docs/architectur
 
 - Node.js 22 or newer, pnpm 10
 - PostgreSQL with the backend's migrations applied through
-  `1703_blog_revisions_publication` (the backend owns every schema change; this app never migrates)
+  `1705_blog_revisions_publication` (the backend owns every schema change; this app never migrates)
 
 ## Run locally
 

@@ -4,7 +4,7 @@
 
 Each step must be finished and checked before the next.
 
-1. **Backend migration.** Apply `1703_blog_revisions_publication` with the backend's own migration
+1. **Backend migration.** Apply `1705_blog_revisions_publication` with the backend's own migration
    runner, once, against the environment's database. Check:
    `select version from blog_schema_meta` returns `2`.
 2. **Backend and frontend.** Deploy `streamlineos-backend` and `streamlineos-frontend` from
@@ -38,8 +38,8 @@ Each step must be finished and checked before the next.
 | --- | --- |
 | Admin deployment | Promote the previous Vercel deployment. Content already published stays published. |
 | Stop all editorial writes now | `psql "$OWNER_DATABASE_URL" -f db/revoke-editorial-role.sql` (disables `blog_admin_app`, ends its sessions). The public site is unaffected. Undo by re-running the provisioning script. |
-| Frontend / backend | Redeploy the previous build. The previous backend reads the legacy columns, which 1703 keeps as the published projection, so it serves the same articles. |
-| Migration 1703 | Forward repair is preferred. `migrations/rollback/1703_blog_revisions_publication.down.sql` drops only what 1703 added (revisions, editors, media records, jobs, audit, the new columns). **It discards revision history and editorial media records**; take a backup first and only use it before the admin has been used for real work. |
+| Frontend / backend | Redeploy the previous build. The previous backend reads the legacy columns, which 1705 keeps as the published projection, so it serves the same articles. |
+| Migration 1705 | Forward repair is preferred. `migrations/rollback/1705_blog_revisions_publication.down.sql` drops only what 1705 added (revisions, editors, media records, jobs, audit, the new columns). **It discards revision history and editorial media records**; take a backup first and only use it before the admin has been used for real work. |
 
 ## Backup and restore
 

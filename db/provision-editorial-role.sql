@@ -1,5 +1,5 @@
 -- Provision the blog admin's least-privilege database access. Run once per environment, AFTER the
--- backend has applied migration 1703, connected as the database owner:
+-- backend has applied migration 1705, connected as the database owner:
 --
 --   psql "$OWNER_DATABASE_URL" -v admin_password="$(openssl rand -base64 36)" -f db/provision-editorial-role.sql
 --

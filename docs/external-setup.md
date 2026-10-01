@@ -19,7 +19,7 @@ The PRD assumes Neon. The backend's configured database is PostgreSQL on AWS RDS
 (`ap-south-1`); the admin works with either, as long as it points at **the same database** the
 backend uses in that environment.
 
-1. Apply migration `1703_blog_revisions_publication` through the backend's migration runner, on
+1. Apply migration `1705_blog_revisions_publication` through the backend's migration runner, on
    staging first, then production. It could not be applied from this machine (no access to the
    production AWS account).
 2. Run `db/provision-editorial-role.sql` as the database owner (see the runbook). `blog_admin_app`

@@ -5,7 +5,7 @@ import { blogSchemaMeta } from "./schema";
 
 /**
  * Shared-schema contract versions this build can write. `blog_schema_meta.version` is set by the
- * backend migration that last changed what the admin must write (1703 sets 2). A database outside
+ * backend migration that last changed what the admin must write (1705 sets 2). A database outside
  * this list means the backend and admin are out of step, so every write is refused with 503 rather
  * than risk writing rows a public reader cannot handle.
  */

@@ -1,4 +1,4 @@
--- Test-only: the pre-1703 blog tables exactly as streamlineos-backend's 0000 and 0843 create them.
+-- Test-only: the pre-1705 blog tables exactly as streamlineos-backend's 0000 and 0843 create them.
 -- Production schema is owned by the backend's migration runner; this file only lets the admin's
 -- database tests build an isolated database without the backend's full 1,100-migration chain.
 DO $$ BEGIN

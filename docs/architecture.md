@@ -25,7 +25,7 @@ public-site integration receiver, not an admin write API; the old `/blog/admin/*
 | Repository | Owns |
 | --- | --- |
 | `streamlineos-blog-admin` (this) | Editorial UI, auth, validation, Drizzle writes, revisions, publishing, scheduling, R2 upload/processing/promotion, durable jobs |
-| `streamlineos-backend` | The **only** migration history (migration `1703_blog_revisions_publication`), public read endpoints, the publication predicate, sitemap/RSS/search/redirect reads, the signed invalidation receiver |
+| `streamlineos-backend` | The **only** migration history (migration `1705_blog_revisions_publication`), public read endpoints, the publication predicate, sitemap/RSS/search/redirect reads, the signed invalidation receiver |
 | `streamlineos-frontend` | `/blogs` pages, SEO metadata, JSON-LD, sitemap integration, RSS proxy, journal design |
 
 The admin never runs migrations. It declares the shared-schema versions it can write
@@ -34,7 +34,7 @@ before every write and in `/api/health`; any other version answers 503 and write
 `db/test-schema/` holds byte-identical copies of the backend migrations its database tests need;
 `pnpm check:schema-vendor` fails if they drift.
 
-## Data model (after migration 1703)
+## Data model (after migration 1705)
 
 - `blog_posts` keeps every legacy column. Those columns now hold the **published projection** of
   `published_revision_id`, so any reader that only knows the old columns keeps serving exactly what
