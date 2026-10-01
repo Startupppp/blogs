@@ -6,12 +6,14 @@ real service. See [verification.md](verification.md) for what was verified local
 
 ## 1. Merge the existing-repository changes
 
-| Repository | Branch | State |
+| Repository | Branch | Pull request |
 | --- | --- | --- |
-| `streamlineos-backend` | `feat/blog-shared-publication` | Local commits only; not pushed, no PR |
-| `streamlineos-frontend` | `feat/blog-shared-publication` | Local commits only; not pushed, no PR |
+| `streamlineos-backend` | `feat/blog-shared-publication` | [Startupppp/streamlineos-backend#83](https://github.com/Startupppp/streamlineos-backend/pull/83) |
+| `streamlineos-frontend` | `feat/blog-shared-publication` | [Startupppp/streamlineos-frontend#230](https://github.com/Startupppp/streamlineos-frontend/pull/230) |
+| `Startupppp/blogs` (this) | `blog/post-audit-fixes` | [Startupppp/blogs#1](https://github.com/Startupppp/blogs/pull/1) |
 
 Merge the backend first, deploy it, then the frontend (rollout order in [runbook.md](runbook.md)).
+Both branches carry a merge of `origin/main`, so they are current as of 1 October 2026.
 
 ## 2. Database
 
